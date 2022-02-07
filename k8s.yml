@@ -6,19 +6,31 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hello-world
+      app: importcenter
   template:
     metadata:
       labels:
-        app: hello-world
+        app: importcenter
+        project: service
     spec:
       terminationGracePeriodSeconds: 0
+      securityContext:
+        runAsUser: 1001180000
+        runAsGroup: 1001180000
+        fsGroup: 1001180000
       containers:
       - name: api
-        image: okteto/hello-world:java-maven
+        image: remote-docker.artifactory.dbgcloud.io/okteto/hello-world:java-maven
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 3Gi
 
 ---
 
@@ -29,11 +41,11 @@ metadata:
   annotations:
     dev.okteto.com/auto-ingress: "true"
   labels:
-    app: hello-world
+    app: importcenter
 spec:
   type: ClusterIP
   ports:
     - name: hello-world
       port: 8080
   selector:
-    app: hello-world
+    app: importcenter
